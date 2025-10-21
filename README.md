@@ -42,3 +42,8 @@ If you want to contact me you can reach me at [Twitter](https://www.x.com/codewi
 ## License
 
 MIT
+
+---
+
+Forked và tùy biến bởi TO QUANG TUNG. Repo gốc: https://github.com/codewithsadee/vcard-personal-portfolio
+
