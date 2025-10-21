@@ -2265,26 +2265,3 @@ textarea.form-input::-webkit-resizer { display: none; }
 
 
 
-/* === Mobile Sidebar Fix (Giữ cuối file để override) === */
-.sidebar {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  height: 100vh;
-  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-  scrollbar-gutter: stable;
-}
-
-@supports (height: 100dvh) {
-  .sidebar {
-    height: 100dvh;
-  }
-}
-
-@media (max-width: 640px) {
-  .sidebar {
-    position: relative;
-    height: auto;
-    max-height: none;
-  }
-}
