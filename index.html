@@ -13,80 +13,76 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 
-  <!-- Quick mobile overflow + viewport fix -->
+  <!-- Mobile collapse & overflow fix -->
   <style>
-    /* Layer đặt cao để ghi đè nếu file chính dùng cascade phức tạp */
     @layer mobile-fix {
       :root {
         --sidebar-scrollbar-bg: transparent;
         --sidebar-scrollbar-thumb: rgba(255,255,255,0.25);
+        --sidebar-collapse-duration: .35s;
+        --sidebar-collapse-ease: cubic-bezier(.4,0,.2,1);
       }
 
       .sidebar {
-        /* Cho phép cuộn */
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
         scrollbar-gutter: stable;
-        /* Chiều cao linh hoạt */
         height: 100vh;
         padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-        position: sticky; /* Nếu đang dùng fixed ở CSS cũ, sticky thân thiện hơn trong nhiều trường hợp */
+        position: sticky;
         top: 0;
         background-clip: padding-box;
       }
-
-      /* Trình duyệt hỗ trợ đơn vị động -> ổn định hơn trên iOS Safari */
       @supports (height: 100dvh) {
-        .sidebar {
-          height: 100dvh;
-        }
+        .sidebar { height: 100dvh; }
       }
 
-      /* Nếu phần mở rộng bên trong có giới hạn max-height ở CSS gốc -> bỏ để nội dung không bị kẹp */
+      /* Khối có thể thu gọn: dùng transition height */
       .sidebar-info_more {
-        max-height: none !important;
-        overflow: visible;
+        /* Bắt đầu ở trạng thái mở (height:auto); JS sẽ xử lý khi thu */
+        overflow: hidden;
+        height: auto;
+        transition: height var(--sidebar-collapse-duration) var(--sidebar-collapse-ease);
+        will-change: height;
       }
 
-      /* Khi JS muốn đóng/mở, có thể thêm/loại bỏ .is-collapsed.
-         Dưới đây đảm bảo dù collapsed vẫn không cắt thông tin bên dưới nút toggle. */
+      /* Trạng thái thu gọn: JS đặt height:0; thêm class để tinh chỉnh padding */
       .sidebar.is-collapsed .sidebar-info_more {
-        display: none;
+        /* height sẽ bị ép về 0 qua JS; giữ transition để mượt */
       }
 
-      /* Mobile breakpoint: nếu layout chuyển sang dọc (sidebar trên, nội dung dưới),
-         ta có thể cho height auto để trang tổng thể cuộn, tránh “double scroll” */
+      /* Giảm khoảng trống khi thu gọn trên mobile */
       @media (max-width: 640px) {
-        body, html {
-          height: auto;
-        }
+        body, html { height: auto; }
         .sidebar {
           position: relative;
           height: auto;
           max-height: none;
           padding-block-end: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+          transition: padding-bottom .25s ease;
+        }
+        .sidebar.is-collapsed {
+          padding-bottom: .5rem;
         }
       }
 
-      /* Tăng khả năng chạm nút toggle */
-      .info_more-btn {
-        touch-action: manipulation;
-      }
+      .info_more-btn { touch-action: manipulation; }
 
-      /* (Tùy chọn) Tùy biến thanh cuộn nhẹ nhàng */
-      .sidebar::-webkit-scrollbar {
-        width: 8px;
-      }
-      .sidebar::-webkit-scrollbar-track {
-        background: var(--sidebar-scrollbar-bg);
-      }
+      /* Scrollbar tùy biến */
+      .sidebar::-webkit-scrollbar { width: 8px; }
+      .sidebar::-webkit-scrollbar-track { background: var(--sidebar-scrollbar-bg); }
       .sidebar::-webkit-scrollbar-thumb {
         background: var(--sidebar-scrollbar-thumb);
         border-radius: 4px;
       }
-      .sidebar:hover::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.4);
+      .sidebar:hover::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); }
+
+      /* Tôn trọng giảm chuyển động */
+      @media (prefers-reduced-motion: reduce) {
+        .sidebar-info_more {
+          transition: none;
+        }
       }
     }
   </style>
