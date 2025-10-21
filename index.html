@@ -13,9 +13,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 
-    <!-- Quick mobile overflow + viewport fix -->
+      <!-- Quick mobile overflow + viewport fix + auto-expand contact on mobile -->
   <style>
-    /* Layer đặt cao để ghi đè nếu file chính dùng cascade phức tạp */
     @layer mobile-fix {
       :root {
         --sidebar-scrollbar-bg: transparent;
@@ -23,42 +22,34 @@
       }
 
       .sidebar {
-        /* Cho phép cuộn */
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
         scrollbar-gutter: stable;
-        /* Chiều cao linh hoạt */
         height: 100vh;
         padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-        position: sticky; /* Nếu đang dùng fixed ở CSS cũ, sticky thân thiện hơn trong nhiều trường hợp */
+        position: sticky;
         top: 0;
         background-clip: padding-box;
       }
 
-      /* Trình duyệt hỗ trợ đơn vị động -> ổn định hơn trên iOS Safari */
       @supports (height: 100dvh) {
-        .sidebar {
-          height: 100dvh;
-        }
+        .sidebar { height: 100dvh; }
       }
 
-      /* Nếu phần mở rộng bên trong có giới hạn max-height ở CSS gốc -> bỏ để nội dung không bị kẹp */
       .sidebar-info_more {
         max-height: none !important;
         overflow: visible;
       }
 
-      /* Khi JS muốn đóng/mở, có thể thêm/loại bỏ .is-collapsed.
-         Dưới đây đảm bảo dù collapsed vẫn không cắt thông tin bên dưới nút toggle. */
+      /* Trạng thái thu gọn chỉ còn áp dụng cho desktop */
       .sidebar.is-collapsed .sidebar-info_more {
         display: none;
       }
 
-      /* Mobile breakpoint: nếu layout chuyển sang dọc (sidebar trên, nội dung dưới),
-         ta có thể cho height auto để trang tổng thể cuộn, tránh “double scroll” */
+      /* Mobile breakpoint: luôn mở phần liên hệ, bỏ nút toggle */
       @media (max-width: 640px) {
-        body, html {
+        html, body {
           height: auto;
         }
         .sidebar {
@@ -67,14 +58,22 @@
           max-height: none;
           padding-block-end: calc(1.25rem + env(safe-area-inset-bottom, 0px));
         }
+        .info_more-btn {
+          display: none !important;
+        }
+        .sidebar-info_more {
+          display: block !important;
+        }
+        /* Nếu JS trước đó đã thêm .is-collapsed thì ta vô hiệu */
+        .sidebar.is-collapsed .sidebar-info_more {
+          display: block !important;
+        }
       }
 
-      /* Tăng khả năng chạm nút toggle */
       .info_more-btn {
         touch-action: manipulation;
       }
 
-      /* (Tùy chọn) Tùy biến thanh cuộn nhẹ nhàng */
       .sidebar::-webkit-scrollbar {
         width: 8px;
       }
@@ -90,7 +89,6 @@
       }
     }
   </style>
-</head>
 
 
   
